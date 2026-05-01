@@ -1,0 +1,37 @@
+你是一名架构师级别的代码重构专家。基于以下代码扫描报告和规范比对报告，请为每个技术债项生成重构方案。
+
+要求：
+1. 对每个问题给出明确的优先级（critical / high / medium / low）
+2. 分析影响范围（受影响的文件和模块列表）
+3. 给出具体的重构步骤（按顺序列出）
+4. 提供重构前后的代码对比示例
+5. 评估重构风险（high / medium / low）和预估工作量（小时）
+6. 考虑向后兼容性
+
+请输出JSON格式，包含一个 items 数组，每个元素结构如下：
+{
+  "id": "DEBT-YYYY-MMDD-NNNN",
+  "title": "简短描述",
+  "priority": "critical/high/medium/low",
+  "category": "security/architecture/quality/compliance",
+  "affected_files": ["文件路径列表"],
+  "affected_modules": ["模块名列表"],
+  "estimated_hours": 数字,
+  "risk_level": "high/medium/low",
+  "description": "详细描述",
+  "refactoring_steps": ["步骤1", "步骤2", ...],
+  "code_suggestion": {
+    "before": "重构前代码",
+    "after": "重构后代码"
+  }
+}
+
+注意：
+- 优先级排序：安全类 > 架构类 > 代码质量类 > 规范类
+- 重构步骤要具体可执行
+- 代码示例要完整可运行
+- 风险评估要考虑回归风险和影响范围
+
+扫描报告：{scan_report}
+规范比对报告：{compliance_report}
+历史技术债台账：{historical_debt}

@@ -1,0 +1,74 @@
+system:
+  name: "CodeGuard Agent"
+  version: "1.0.0"
+  log_level: "INFO"
+  host: "0.0.0.0"
+  port: 8000
+
+git:
+  platform: "gitlab"
+  base_url: "https://gitlab.com"
+  access_token: "${GITLAB_ACCESS_TOKEN}"
+  webhook_secret: "${WEBHOOK_SECRET}"
+
+llm:
+  provider: "openai"
+  model: "gpt-4o"
+  api_key: "${OPENAI_API_KEY}"
+  api_base: "${OPENAI_API_BASE:https://api.openai.com/v1}"
+  max_tokens: 4096
+  temperature: 0.1
+  retry_max_attempts: 3
+  retry_backoff_seconds: 2
+
+vector_db:
+  provider: "chroma"
+  persist_directory: "./data/chroma"
+  collection_standards: "coding_standards"
+  collection_code: "code_snippets"
+  embedding_model: "text-embedding-3-small"
+  embedding_dim: 1536
+
+database:
+  url: "${DATABASE_URL:postgresql+asyncpg://codeguard:codeguard@localhost:5432/codeguard}"
+  pool_size: 10
+  max_overflow: 20
+
+redis:
+  url: "${REDIS_URL:redis://localhost:6379/0}"
+
+agents:
+  code_scan:
+    enabled: true
+    timeout_seconds: 120
+    tools:
+      - "semgrep"
+      - "tree_sitter"
+      - "radon"
+
+  standard_compare:
+    enabled: true
+    timeout_seconds: 60
+    similarity_threshold: 0.75
+
+  refactor_suggest:
+    enabled: true
+    timeout_seconds: 180
+    max_suggestions_per_issue: 3
+
+  verify:
+    enabled: true
+    timeout_seconds: 300
+    test_command: "pytest --cov=src --cov-report=json"
+    coverage_threshold: 75.0
+
+notification:
+  enabled: false
+  channels:
+    - type: "slack"
+      webhook_url: "${SLACK_WEBHOOK_URL}"
+      channel: "#code-review"
+    - type: "email"
+      smtp_host: "smtp.company.com"
+      smtp_port: 587
+      recipients: ["tech-lead@company.com"]

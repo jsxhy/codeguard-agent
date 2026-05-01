@@ -1,0 +1,42 @@
+services:
+  codeguard-api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GITLAB_ACCESS_TOKEN=${GITLAB_ACCESS_TOKEN}
+      - DATABASE_URL=postgresql+asyncpg://codeguard:codeguard@postgres:5432/codeguard
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./data/chroma:/app/data/chroma
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: codeguard
+      POSTGRES_USER: codeguard
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-codeguard}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  dashboard:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - codeguard-api
+
+volumes:
+  pg_data:
